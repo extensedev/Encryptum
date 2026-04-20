@@ -9,7 +9,7 @@
         <TrimMode>full</TrimMode>
         <IlcStackReserveSize>8388608</IlcStackReserveSize>
         <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
-        <NoWarn>CA1416;IL2026;NU1903</NoWarn>
+        <NoWarn>CA1416;IL2026</NoWarn>
         <DefaultItemExcludes>$(DefaultItemExcludes);ShadUI\**</DefaultItemExcludes>
         <RootNamespace>Encryptum</RootNamespace>
         <AssemblyName>Encryptum</AssemblyName>
@@ -38,6 +38,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="HotAvalonia" Version="3.1.0" />
         <PackageReference Include="Lucide.Avalonia" Version="0.2.3" />
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
         <ProjectReference Include="ShadUI\ShadUI.csproj" />
     </ItemGroup>
 
