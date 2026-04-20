@@ -1,0 +1,10 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea/
+AGENTS.md
+IMPROVEMENTS.md
+publish.bat
+README_ru.md

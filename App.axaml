@@ -1,0 +1,105 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Encryptum.App"
+             xmlns:local="using:Encryptum"
+             xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+             RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <shad:ShadTheme />
+
+        <Style Selector="Button.Primary:pointerover /template/ Border#HoverBackground">
+            <Setter Property="Opacity" Value="0.25"/>
+        </Style>
+        <Style Selector="Button.Primary:pointerover /template/ Border#BaseBackground">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+        <Style Selector="Button.Secondary:pointerover /template/ Border#HoverBackground">
+            <Setter Property="Opacity" Value="0.25"/>
+        </Style>
+        <Style Selector="Button.Secondary:pointerover /template/ Border#BaseBackground">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+
+        <Style Selector="Button.Outline /template/ Panel#RootPanel">
+            <Setter Property="Transitions" Value="{x:Null}"/>
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+        <Style Selector="Button.Outline /template/ Border#HoverBackground">
+            <Setter Property="Transitions" Value="{x:Null}"/>
+        </Style>
+        <Style Selector="Button.Outline /template/ Border#BaseBackground">
+            <Setter Property="Transitions" Value="{x:Null}"/>
+        </Style>
+
+        <Style Selector="Button.Ghost">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+
+        <Style Selector="ScrollBar[Orientation=Vertical]">
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="Transparent" HorizontalAlignment="Right">
+                        <Track Name="PART_Track"
+                               IsDirectionReversed="True"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value, Mode=TwoWay}"
+                               ViewportSize="{TemplateBinding ViewportSize}"
+                               Orientation="Vertical">
+                            <Track.Thumb>
+                                <Thumb Name="thumb">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Name="ThumbVisual"
+                                                    Background="#52525b"
+                                                    CornerRadius="4"
+                                                    Width="6"
+                                                    HorizontalAlignment="Right"
+                                                    Margin="0,2,4,2"/>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ScrollBar[Orientation=Vertical] /template/ Thumb:pointerover /template/ Border#ThumbVisual">
+            <Setter Property="Background" Value="#71717a"/>
+            <Setter Property="Width" Value="8"/>
+        </Style>
+
+        <Style Selector="ScrollBar[Orientation=Vertical]:disabled">
+            <Setter Property="Opacity" Value="0"/>
+        </Style>
+
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="ComboBox /template/ Border#Background">
+            <Setter Property="Transitions" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{DynamicResource GhostColor}"/>
+        </Style>
+        <Style Selector="ComboBox:pointerover /template/ Border#Background">
+            <Setter Property="Transitions" Value="{x:Null}"/>
+            <Setter Property="Opacity" Value="0.25"/>
+        </Style>
+        <Style Selector="ComboBox:not(:pointerover) /template/ Border#Background">
+            <Setter Property="Opacity" Value="0"/>
+        </Style>
+    </Application.Styles>
+</Application>

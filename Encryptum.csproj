@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <PublishAot>true</PublishAot>
+        <TrimMode>full</TrimMode>
+        <IlcStackReserveSize>8388608</IlcStackReserveSize>
+        <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+        <NoWarn>CA1416;IL2026;NU1903</NoWarn>
+        <DefaultItemExcludes>$(DefaultItemExcludes);ShadUI\**</DefaultItemExcludes>
+        <RootNamespace>Encryptum</RootNamespace>
+        <AssemblyName>Encryptum</AssemblyName>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <PublishAot>false</PublishAot>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Assets\" />
+        <Folder Include="Models\" />
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.12" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+
+
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="HotAvalonia" Version="3.1.0" />
+        <PackageReference Include="Lucide.Avalonia" Version="0.2.3" />
+        <ProjectReference Include="ShadUI\ShadUI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\Windows\SettingsWindow.axaml.cs">
+        <DependentUpon>SettingsWindow.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\Dialogs\DeleteConfirmDialog.axaml.cs">
+        <DependentUpon>DeleteConfirmDialog.axaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>

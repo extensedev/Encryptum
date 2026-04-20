@@ -1,0 +1,401 @@
+<shad:Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Encryptum.ViewModels.Windows"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+        x:Class="Encryptum.Views.Windows.MainWindow"
+        x:DataType="vm:VaultViewModel"
+        Title="Encryptum"
+        WindowStartupLocation="CenterScreen"
+        TitleBarAnimationEnabled="False"
+        Icon="/Assets/icon.ico">
+
+    <shad:Window.LogoContent>
+        <Image Source="/Assets/icon.png" Width="20" Height="20"/>
+    </shad:Window.LogoContent>
+
+    <shad:Window.Hosts>
+        <shad:ToastHost Manager="{Binding MessageService.ToastManager}" Position="BottomRight" MaxToasts="4"/>
+    </shad:Window.Hosts>
+
+    <shad:Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveFileCommand}"/>
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelectedCommand}"/>
+        <KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelectedCommand}"/>
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}"/>
+        <KeyBinding Gesture="Delete" Command="{Binding DeleteSelectedCommand}"/>
+        <KeyBinding Gesture="F2" Command="{Binding RenameSelectedItemCommand}"/>
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCommand}"/>
+    </shad:Window.KeyBindings>
+
+    <Window.Styles>
+        <!-- Explorer item styles -->
+        <Style Selector="Border.explorer-item">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="Border.explorer-item-hover">
+            <Setter Property="Background" Value="{DynamicResource ItemHoverColor}"/>
+        </Style>
+        <Style Selector="Border.explorer-item-selected">
+            <Setter Property="Background" Value="{DynamicResource ItemSelectedColor}"/>
+        </Style>
+        <Style Selector="Border.item-drop-target">
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <!-- Context menu ShadUI style -->
+        <Style Selector="Menu">
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="ContextMenu">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+        <Style Selector="ContextMenu Border#PopupBorder">
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="MenuItem">
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="FontFamily" Value="Inter,Segoe UI,system-ui,sans-serif"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <!-- Fix icon centering — ShadUI defaults Height=8, too small for 16px icons -->
+        <Style Selector="MenuItem /template/ ContentPresenter#Icon">
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="MenuItem:pointerover /template/ Border#RootBorder">
+            <Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="48,*">
+        <!-- Toolbar -->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource BorderColor}"
+                BorderThickness="0,0,0,1"
+                Padding="12,0"
+                Background="{DynamicResource CardBackgroundColor}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Command="{Binding GoBackCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Back"
+                        IsVisible="{Binding ShowBackButton}">
+                    <LucideIcon Kind="ArrowLeft" Size="18"/>
+                </Button>
+
+                <TextBlock Grid.Column="1" Text="{Binding BreadcrumbText}" FontSize="16" FontWeight="Regular"
+                           VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}" Margin="8,0,0,0"
+                           TextTrimming="CharacterEllipsis"
+                           IsVisible="{Binding !IsFileOpen}"/>
+
+                <TextBlock Grid.Column="1" Text="{Binding FileTitle}" FontSize="16" FontWeight="Regular"
+                           VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}" Margin="8,0,0,0"
+                           TextTrimming="CharacterEllipsis"
+                           IsVisible="{Binding IsFileOpen}"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                    <!-- File/Folder creation group -->
+                    <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
+                        <Button x:Name="NewFolderBtn" ToolTip.Tip="New Folder" Classes="Ghost" Padding="6,4">
+                            <LucideIcon Kind="FolderPlus" Size="18"/>
+                        </Button>
+                        <Button x:Name="NewFileBtn" ToolTip.Tip="New File" Classes="Ghost" Padding="6,4">
+                            <LucideIcon Kind="FilePlus" Size="18"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Divider -->
+                    <Border Width="1" Background="{DynamicResource BorderColor}" Margin="4,8"
+                            IsVisible="{Binding !IsFileOpen}"/>
+
+                    <!-- Import/Export group -->
+                    <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
+                        <Button x:Name="ImportFolderBtn" ToolTip.Tip="Import" Classes="Ghost" Padding="6,4">
+                            <LucideIcon Kind="FolderInput" Size="18"/>
+                        </Button>
+                        <Button x:Name="ExportBtn" ToolTip.Tip="Export  (Ctrl+E)" Classes="Ghost" Padding="6,4">
+                            <LucideIcon Kind="FolderOutput" Size="18"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Divider -->
+                    <Border Width="1" Background="{DynamicResource BorderColor}" Margin="4,8"
+                            IsVisible="{Binding !IsFileOpen}"/>
+
+                    <!-- View/Theme group -->
+                    <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
+                        <Button x:Name="ToggleViewBtn" Command="{Binding ToggleViewCommand}" ToolTip.Tip="Toggle View" Classes="Ghost" Padding="6,4">
+                            <LucideIcon x:Name="ToggleViewIcon" Kind="LayoutGrid" Size="18"/>
+                        </Button>
+                        <Button x:Name="ThemeToggleBtn" ToolTip.Tip="Toggle Theme" Classes="Ghost" Padding="6,4">
+                            <LucideIcon x:Name="ThemeToggleIcon" Kind="Sun" Size="18"/>
+                        </Button>
+                        <Button Command="{Binding OpenSettingsCommand}" ToolTip.Tip="Settings" Classes="Ghost" Padding="6,4">
+                            <LucideIcon Kind="Settings" Size="18"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- File open group -->
+                    <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding IsFileOpen}">
+                        <Button Command="{Binding PreviewFileCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Open externally">
+                            <LucideIcon Kind="ExternalLink" Size="18"/>
+                        </Button>
+                        <Button Command="{Binding SaveFileCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Save (Ctrl+S)">
+                            <LucideIcon Kind="Save" Size="18"/>
+                        </Button>
+                        <Button x:Name="DeleteBtn" Classes="Ghost" Padding="6,4" ToolTip.Tip="Delete">
+                            <LucideIcon Kind="Trash2" Size="18"/>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Explorer Area -->
+        <Grid Grid.Row="1" IsVisible="{Binding !IsFileOpen}"
+              x:Name="ExplorerArea">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Paste  (Ctrl+V)" Click="OnContextPasteClick" IsEnabled="{Binding CanPaste}">
+                        <MenuItem.Icon>
+                            <LucideIcon Kind="ClipboardPaste" Size="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="New Folder" Click="OnNewFolderClick">
+                        <MenuItem.Icon>
+                            <LucideIcon Kind="FolderPlus" Size="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="New File" Click="OnNewFileClick">
+                        <MenuItem.Icon>
+                            <LucideIcon Kind="FilePlus" Size="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
+                        <MenuItem.Icon>
+                            <LucideIcon Kind="FolderOutput" Size="16"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.ContextMenu>
+
+            <!-- Grid View -->
+            <ScrollViewer IsVisible="{Binding !IsListView}"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          Background="Transparent"
+                          x:Name="GridScroller"
+                          PointerPressed="OnExplorerPointerPressed"
+                          PointerMoved="OnExplorerPointerMoved"
+                          PointerReleased="OnExplorerPointerReleased">
+                <ItemsControl x:Name="ExplorerGrid"
+                              ItemsSource="{Binding CurrentItems}"
+                              Margin="12"
+                              Background="Transparent">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="108" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ExplorerItemViewModel">
+                            <Border Width="100" Height="100"
+                                    Margin="4"
+                                    Classes="explorer-item"
+                                    CornerRadius="{DynamicResource MdCornerRadius}"
+                                    Tapped="OnItemTapped"
+                                    DoubleTapped="OnItemDoubleTapped"
+                                    PointerPressed="OnItemPointerPressed"
+                                    PointerReleased="OnItemPointerReleased"
+                                    PointerEntered="OnItemPointerEntered"
+                                    PointerExited="OnItemPointerExited"
+                                    x:Name="ItemBorder">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open" Click="OnContextOpenClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="FolderOpen" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Open Externally" Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="ExternalLink" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Rename  (F2)" Click="OnContextRenameClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Pencil" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Copy  (Ctrl+C)" Click="OnContextCopyClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Copy" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Cut  (Ctrl+X)" Click="OnContextCutClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Scissors" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Delete  (Del)" Click="OnContextDeleteClick" Classes="Destructive">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Trash2" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="FolderOutput" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+                                    <LucideIcon Kind="{Binding FileIconKind}" Size="40"
+                                                HorizontalAlignment="Center"
+                                                Foreground="{DynamicResource ForegroundColor}"
+                                                Opacity="0.7"/>
+                                    <TextBlock Text="{Binding Name}" FontSize="12"
+                                               HorizontalAlignment="Center"
+                                               TextWrapping="Wrap" MaxHeight="32"
+                                               MaxWidth="90"
+                                               TextAlignment="Center"
+                                               LineHeight="16"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- List View -->
+            <ScrollViewer IsVisible="{Binding IsListView}"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          x:Name="ListScroller"
+                          PointerPressed="OnExplorerPointerPressed"
+                          PointerMoved="OnExplorerPointerMoved"
+                          PointerReleased="OnExplorerPointerReleased">
+                <ItemsControl x:Name="ExplorerList"
+                              ItemsSource="{Binding CurrentItems}"
+                              Margin="8"
+                              Padding="0,0,6,0"
+                              PointerPressed="OnExplorerPointerPressed"
+                              PointerMoved="OnExplorerPointerMoved"
+                              PointerReleased="OnExplorerPointerReleased">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ExplorerItemViewModel">
+                            <Border Height="40"
+                                    Margin="0,1"
+                                    Padding="8,0"
+                                    CornerRadius="{DynamicResource SmCornerRadius}"
+                                    Classes="explorer-item"
+                                    Tapped="OnItemTapped"
+                                    DoubleTapped="OnItemDoubleTapped"
+                                    PointerPressed="OnItemPointerPressed"
+                                    PointerReleased="OnItemPointerReleased"
+                                    PointerEntered="OnItemPointerEntered"
+                                    PointerExited="OnItemPointerExited"
+                                    x:Name="ItemBorder">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open" Click="OnContextOpenClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="FolderOpen" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Open Externally" Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="ExternalLink" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Rename  (F2)" Click="OnContextRenameClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Pencil" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Copy  (Ctrl+C)" Click="OnContextCopyClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Copy" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem Header="Cut  (Ctrl+X)" Click="OnContextCutClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Scissors" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Delete  (Del)" Click="OnContextDeleteClick" Classes="Destructive">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="Trash2" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
+                                            <MenuItem.Icon>
+                                                <LucideIcon Kind="FolderOutput" Size="16"/>
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                    <LucideIcon Kind="{Binding FileIconKind}" Size="24"
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource ForegroundColor}"
+                                                Opacity="0.7"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="8,0,8,0"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding InfoText}" FontSize="12"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource MutedColor}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+        </Grid>
+
+        <!-- File Editor -->
+        <TextBox Grid.Row="1"
+                 x:Name="FileEditor"
+                 IsVisible="{Binding IsFileOpen}"
+                 Margin="8"
+                 Text="{Binding FileContent, Mode=TwoWay}"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Watermark="Start typing..."
+                 FontFamily="Inter,Segoe UI,system-ui,sans-serif"
+                 FontSize="14"
+                 Padding="16,12"
+                 Cursor="IBeam"
+                 shad:ControlAssist.MinHeight="200"
+                 VerticalContentAlignment="Top"
+                 AcceptsTab="True"/>
+    </Grid>
+
+</shad:Window>
