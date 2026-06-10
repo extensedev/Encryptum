@@ -13,9 +13,21 @@ public interface IFilePreviewService
 
 public class FilePreviewService : IFilePreviewService
 {
+    // Decrypted previews are written here so they can be wiped as a group.
+    private static readonly string TempDir = Path.Combine(Path.GetTempPath(), "Encryptum");
+
+    static FilePreviewService()
+    {
+        // Remove plaintext left behind by a previous (possibly crashed) session,
+        // and make a best-effort wipe when this process exits normally.
+        TrySweep();
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => TrySweep();
+    }
+
     public async Task PreviewAsync(VirtualFile file)
     {
-        var tempPath = Path.Combine(Path.GetTempPath(), $"encryptum_{Guid.NewGuid():N}_{file.Name}");
+        Directory.CreateDirectory(TempDir);
+        var tempPath = Path.Combine(TempDir, $"{Guid.NewGuid():N}_{file.Name}");
 
         var ext = Path.GetExtension(file.Name);
         var isText = FileTypes.IsTextFile(ext);
@@ -60,4 +72,14 @@ public class FilePreviewService : IFilePreviewService
         await stream.DisposeAsync();
     }
 
+    private static void TrySweep()
+    {
+        // Best-effort: files still held open by an external app may survive until it closes.
+        try
+        {
+            if (Directory.Exists(TempDir))
+                Directory.Delete(TempDir, recursive: true);
+        }
+        catch { /* locked/in-use files are cleaned on the next sweep */ }
+    }
 }

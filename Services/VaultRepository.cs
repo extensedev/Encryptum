@@ -8,9 +8,9 @@ namespace Encryptum.Services;
 
 public interface IVaultRepository
 {
-    VaultData Load(string password);
-    VaultData TryLoad(string password);
-    void Save(VaultData data, string password);
+    VaultData Load(byte[] password);
+    VaultData TryLoad(byte[] password);
+    void Save(VaultData data, byte[] password);
 }
 
 public class VaultRepository : IVaultRepository
@@ -24,7 +24,7 @@ public class VaultRepository : IVaultRepository
         _crypto = crypto;
     }
 
-    public VaultData Load(string password)
+    public VaultData Load(byte[] password)
     {
         if (!File.Exists(VaultPath))
             return new VaultData();
@@ -35,18 +35,9 @@ public class VaultRepository : IVaultRepository
         return JsonSerializer.Deserialize(json, VaultDataContext.Default.VaultData) ?? new VaultData();
     }
 
-    public VaultData TryLoad(string password)
-    {
-        if (!File.Exists(VaultPath))
-            return new VaultData();
+    public VaultData TryLoad(byte[] password) => Load(password);
 
-        var encrypted = File.ReadAllBytes(VaultPath);
-        var jsonBytes = _crypto.Decrypt(encrypted, password);
-        var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-        return JsonSerializer.Deserialize(json, VaultDataContext.Default.VaultData) ?? new VaultData();
-    }
-
-    public void Save(VaultData data, string password)
+    public void Save(VaultData data, byte[] password)
     {
         var json = JsonSerializer.Serialize(data, VaultDataContext.Default.VaultData);
         var jsonBytes = System.Text.Encoding.UTF8.GetBytes(json);

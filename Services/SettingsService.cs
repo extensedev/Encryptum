@@ -5,7 +5,6 @@ namespace Encryptum.Services;
 
 public interface ISettingsService
 {
-    bool MinimizeToTray { get; set; }
     bool RunAtStartup { get; set; }
     bool UseVirtualKeyboard { get; set; }
     bool IsLightTheme { get; set; }
@@ -20,12 +19,6 @@ public class SettingsService : ISettingsService
     private const string RegKey = @"SOFTWARE\Encryptum";
 
     public event Action<string>? SettingChanged;
-
-    public bool MinimizeToTray
-    {
-        get => ReadBool(nameof(MinimizeToTray));
-        set { WriteBool(nameof(MinimizeToTray), value); SettingChanged?.Invoke(nameof(MinimizeToTray)); }
-    }
 
     public bool RunAtStartup
     {

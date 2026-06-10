@@ -48,7 +48,7 @@ Its primary use case is keeping text files and other sensitive files in an encry
 
 ### Convenience features
 - Login screen virtual keyboard (QWERTY)
-- Minimize to tray mode
+- Minimizing hides the app to the system tray (closing exits)
 - Run at Windows startup
 - Light/Dark theme switching
 
@@ -61,10 +61,11 @@ Its primary use case is keeping text files and other sensitive files in an encry
 | Component | Detail |
 |---|---|
 | Encryption | AES-256-GCM (authenticated encryption) |
-| Key derivation | PBKDF2 with SHA-256, 100,000 iterations |
+| Key derivation | PBKDF2 with SHA-256, 600,000 iterations |
 | Salt | 16 bytes, random per save |
 | Nonce | 12 bytes, random per save |
-| Vault format | `[16B salt][12B nonce][ciphertext + 16B GCM tag]` |
+| Vault format | `[4B magic "ENCV"][1B version][16B salt][12B nonce][ciphertext + 16B GCM tag]` |
+| Versioning | A format version byte selects the KDF parameters, so iteration counts can change without breaking existing vaults. Files written before versioning (no magic) are read as version 0 and re-saved in the current format. |
 | Password storage | Password is not stored; key is derived from user input each session |
 
 If `vault.dat` is modified, decryption/integrity validation fails.
@@ -72,7 +73,7 @@ If `vault.dat` is modified, decryption/integrity validation fails.
 ## Important Note
 
 Vault data stays encrypted at rest.
-When you use **Open Externally**, the app creates a temporary file so another program can open it, then removes it automatically.
+When you use **Open Externally**, the app must write the decrypted file to a temporary folder (`%TEMP%\Encryptum`) so another program can open it. The app deletes it on a best-effort basis: shortly after the external app opens it, on exit, and again on next startup. However, while the external program holds the file — or if Encryptum crashes — the plaintext can persist on disk until the next cleanup. The external program may also keep its own cache. Treat **Open Externally** as exposing that file to your system.
 
 ## Tech Stack
 

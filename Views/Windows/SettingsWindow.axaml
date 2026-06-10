@@ -18,13 +18,6 @@
         <StackPanel Spacing="20">
             <TextBlock Text="Settings" FontSize="22" FontWeight="Bold"/>
 
-            <CheckBox IsChecked="{Binding MinimizeToTray, Mode=TwoWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <LucideIcon Kind="Minimize2" Size="18" VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}"/>
-                    <TextBlock Text="Minimize to tray on close" VerticalAlignment="Center"/>
-                </StackPanel>
-            </CheckBox>
-
             <CheckBox IsChecked="{Binding RunAtStartup, Mode=TwoWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <LucideIcon Kind="Rocket" Size="18" VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}"/>

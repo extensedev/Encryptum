@@ -19,7 +19,7 @@ public partial class VaultViewModel : ViewModelBase
     private readonly ICryptoService _crypto;
     private readonly IFilePreviewService _filePreview;
     private readonly SemaphoreSlim _saveLock = new(1, 1);
-    private string _password = string.Empty;
+    private byte[] _password = [];
 
     public IMessageService MessageService { get; }
 
@@ -136,8 +136,8 @@ public partial class VaultViewModel : ViewModelBase
     {
         try
         {
-            _password = password;
-            VaultData = _vault.Load(password);
+            _password = System.Text.Encoding.UTF8.GetBytes(password);
+            VaultData = _vault.Load(_password);
             CurrentFolder = VaultData.Root;
             RefreshCurrentItems();
             StatusText = "Ready";
@@ -156,8 +156,8 @@ public partial class VaultViewModel : ViewModelBase
     {
         try
         {
-            _password = password;
-            VaultData = await Task.Run(() => _vault.Load(password));
+            _password = System.Text.Encoding.UTF8.GetBytes(password);
+            VaultData = await Task.Run(() => _vault.Load(_password));
             CurrentFolder = VaultData.Root;
             RefreshCurrentItems();
             StatusText = "Ready";
@@ -931,4 +931,7 @@ public partial class VaultViewModel : ViewModelBase
             _saveLock.Release();
         }
     }
+
+    /// <summary>Zero the in-memory password bytes. Call on exit/lock.</summary>
+    public void ClearSecret() => System.Security.Cryptography.CryptographicOperations.ZeroMemory(_password);
 }

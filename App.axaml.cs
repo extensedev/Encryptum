@@ -27,6 +27,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         _settings = new SettingsService();
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => ClearSecrets();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -54,7 +55,7 @@ public partial class App : Application
                 desktop.MainWindow = _mainWindow;
                 _mainWindow.Show();
                 loginWindow.Close();
-                ApplyMinimizeToTray();
+                SetupTray();
             };
 
             desktop.MainWindow = loginWindow;
@@ -65,9 +66,7 @@ public partial class App : Application
 
     private void OnSettingChanged(string name)
     {
-        if (name == nameof(ISettingsService.MinimizeToTray))
-            ApplyMinimizeToTray();
-        else if (name == nameof(ISettingsService.IsLightTheme))
+        if (name == nameof(ISettingsService.IsLightTheme))
             ApplyTheme();
     }
 
@@ -77,34 +76,21 @@ public partial class App : Application
         watcher.SwitchTheme(_settings.IsLightTheme ? ShadUI.ThemeMode.Light : ShadUI.ThemeMode.Dark);
     }
 
-    private void ApplyMinimizeToTray()
+    // Tray is always on: minimizing hides the window to the tray, closing (✕) exits.
+    private void SetupTray()
     {
         if (_mainWindow is null || _desktop is null) return;
 
-        if (_settings.MinimizeToTray)
-        {
-            if (_trayIcon is null)
-                SetupTrayIcon(_mainWindow, _desktop);
+        if (_trayIcon is null)
+            SetupTrayIcon(_mainWindow, _desktop);
 
-            _mainWindow.Closing += OnMainWindowClosing;
-        }
-        else
-        {
-            _mainWindow.Closing -= OnMainWindowClosing;
-
-            if (_trayIcon is not null)
-            {
-                _trayIcon.IsVisible = false;
-                _trayIcon.Dispose();
-                _trayIcon = null;
-            }
-        }
+        _mainWindow.PropertyChanged += OnMainWindowPropertyChanged;
     }
 
-    private void OnMainWindowClosing(object? sender, WindowClosingEventArgs e)
+    private void OnMainWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        e.Cancel = true;
-        (sender as Window)!.Hide();
+        if (e.Property == Window.WindowStateProperty && e.NewValue is WindowState.Minimized)
+            (sender as Window)!.Hide();
     }
 
     private void ShowSettingsDialog(Window owner)
@@ -113,6 +99,16 @@ public partial class App : Application
         var settingsWindow = new SettingsWindow { DataContext = settingsVm };
         settingsVm.Closed += () => settingsWindow.Close();
         settingsWindow.ShowDialog(owner);
+    }
+
+    private void ClearSecrets() =>
+        (_mainWindow?.DataContext as VaultViewModel)?.ClearSecret();
+
+    private static void RestoreFromTray(Window mainWindow)
+    {
+        mainWindow.Show();
+        mainWindow.WindowState = WindowState.Normal;
+        mainWindow.Activate();
     }
 
     private void SetupTrayIcon(Window mainWindow, IClassicDesktopStyleApplicationLifetime desktop)
@@ -124,23 +120,16 @@ public partial class App : Application
             IsVisible = true
         };
 
-        _trayIcon.Clicked += (_, _) =>
-        {
-            mainWindow.Show();
-            mainWindow.Activate();
-        };
+        _trayIcon.Clicked += (_, _) => RestoreFromTray(mainWindow);
 
         var showMenuItem = new NativeMenuItem("Show");
-        showMenuItem.Click += (_, _) =>
-        {
-            mainWindow.Show();
-            mainWindow.Activate();
-        };
+        showMenuItem.Click += (_, _) => RestoreFromTray(mainWindow);
 
         var exitMenuItem = new NativeMenuItem("Exit");
         exitMenuItem.Click += (_, _) =>
         {
             _trayIcon.IsVisible = false;
+            ClearSecrets();
             desktop.Shutdown();
         };
 

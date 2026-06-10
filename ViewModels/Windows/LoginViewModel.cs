@@ -88,10 +88,11 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
+        var pw = System.Text.Encoding.UTF8.GetBytes(Password);
         try
         {
             IsBusy = true;
-            await Task.Run(() => _vault.TryLoad(Password));
+            await Task.Run(() => _vault.TryLoad(pw));
             LoginSucceeded?.Invoke();
         }
         catch (Exception)
@@ -100,6 +101,7 @@ public partial class LoginViewModel : ViewModelBase
         }
         finally
         {
+            System.Security.Cryptography.CryptographicOperations.ZeroMemory(pw);
             IsBusy = false;
         }
     }
