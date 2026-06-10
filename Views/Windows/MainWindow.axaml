@@ -22,10 +22,10 @@
 
     <shad:Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveFileCommand}"/>
-        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelectedCommand}"/>
-        <KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelectedCommand}"/>
-        <KeyBinding Gesture="Ctrl+V" Command="{Binding PasteCommand}"/>
-        <KeyBinding Gesture="Delete" Command="{Binding DeleteSelectedCommand}"/>
+        <shad:SmartKeyBinding Gesture="Ctrl+C" SmartCommand="{Binding CopySelectedCommand}"/>
+        <shad:SmartKeyBinding Gesture="Ctrl+X" SmartCommand="{Binding CutSelectedCommand}"/>
+        <shad:SmartKeyBinding Gesture="Ctrl+V" SmartCommand="{Binding PasteCommand}"/>
+        <shad:SmartKeyBinding Gesture="Delete" SmartCommand="{Binding DeleteSelectedCommand}"/>
         <KeyBinding Gesture="F2" Command="{Binding RenameSelectedItemCommand}"/>
         <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCommand}"/>
     </shad:Window.KeyBindings>
