@@ -1,160 +1,134 @@
-<shad:Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Encryptum.ViewModels.Windows"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+        xmlns:shadui="using:ShadowUI"
+        xmlns:enc="using:Encryptum.Controls"
+        xmlns:dlg="using:Encryptum.ViewModels.Dialogs"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
         x:Class="Encryptum.Views.Windows.MainWindow"
         x:DataType="vm:VaultViewModel"
         Title="Encryptum"
         WindowStartupLocation="CenterScreen"
-        TitleBarAnimationEnabled="False"
         Icon="/Assets/icon.ico">
 
-    <shad:Window.LogoContent>
-        <Image Source="/Assets/icon.png" Width="20" Height="20"/>
-    </shad:Window.LogoContent>
-
-    <shad:Window.Hosts>
-        <shad:ToastHost Manager="{Binding MessageService.ToastManager}" Position="BottomRight" MaxToasts="4"/>
-    </shad:Window.Hosts>
-
-    <shad:Window.KeyBindings>
+    <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveFileCommand}"/>
-        <shad:SmartKeyBinding Gesture="Ctrl+C" SmartCommand="{Binding CopySelectedCommand}"/>
-        <shad:SmartKeyBinding Gesture="Ctrl+X" SmartCommand="{Binding CutSelectedCommand}"/>
-        <shad:SmartKeyBinding Gesture="Ctrl+V" SmartCommand="{Binding PasteCommand}"/>
-        <shad:SmartKeyBinding Gesture="Delete" SmartCommand="{Binding DeleteSelectedCommand}"/>
+        <enc:SmartKeyBinding Gesture="Ctrl+C" SmartCommand="{Binding CopySelectedCommand}"/>
+        <enc:SmartKeyBinding Gesture="Ctrl+X" SmartCommand="{Binding CutSelectedCommand}"/>
+        <enc:SmartKeyBinding Gesture="Ctrl+V" SmartCommand="{Binding PasteCommand}"/>
+        <enc:SmartKeyBinding Gesture="Delete" SmartCommand="{Binding DeleteSelectedCommand}"/>
         <KeyBinding Gesture="F2" Command="{Binding RenameSelectedItemCommand}"/>
         <KeyBinding Gesture="Ctrl+E" Command="{Binding ExportCommand}"/>
-    </shad:Window.KeyBindings>
+    </Window.KeyBindings>
 
     <Window.Styles>
         <!-- Explorer item styles -->
         <Style Selector="Border.explorer-item">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+            <Setter Property="Background" Value="{DynamicResource ShadowCardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShadowBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
         <Style Selector="Border.explorer-item-hover">
-            <Setter Property="Background" Value="{DynamicResource ItemHoverColor}"/>
+            <Setter Property="Background" Value="{DynamicResource ShadowMutedBrush}"/>
         </Style>
         <Style Selector="Border.explorer-item-selected">
-            <Setter Property="Background" Value="{DynamicResource ItemSelectedColor}"/>
+            <Setter Property="Background" Value="{DynamicResource ShadowAccentBrush}"/>
         </Style>
         <Style Selector="Border.item-drop-target">
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColor}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShadowPrimaryBrush}"/>
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
-        <!-- Context menu ShadUI style -->
-        <Style Selector="Menu">
-            <Setter Property="CornerRadius" Value="8"/>
-        </Style>
-        <Style Selector="ContextMenu">
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="2"/>
-        </Style>
-        <Style Selector="ContextMenu Border#PopupBorder">
-            <Setter Property="CornerRadius" Value="8"/>
-        </Style>
-        <Style Selector="MenuItem">
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding" Value="10,6"/>
-            <Setter Property="FontFamily" Value="Inter,Segoe UI,system-ui,sans-serif"/>
-            <Setter Property="FontSize" Value="13"/>
-        </Style>
-        <!-- Fix icon centering — ShadUI defaults Height=8, too small for 16px icons -->
-        <Style Selector="MenuItem /template/ ContentPresenter#Icon">
-            <Setter Property="Height" Value="18"/>
-            <Setter Property="Width" Value="18"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
-        <Style Selector="MenuItem:pointerover /template/ Border#RootBorder">
-            <Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
-            <Setter Property="CornerRadius" Value="6"/>
+        <!-- Destructive menu item (Delete) -->
+        <Style Selector="MenuItem.destructive">
+            <Setter Property="Foreground" Value="{DynamicResource ShadowDestructiveBrush}"/>
         </Style>
     </Window.Styles>
+
+    <Grid>
+    <DockPanel>
+    <shadui:TitleBar DockPanel.Dock="Top" Title="Encryptum" IconSize="20">
+        <shadui:TitleBar.Icon>
+            <Image Source="/Assets/icon.png"/>
+        </shadui:TitleBar.Icon>
+    </shadui:TitleBar>
 
     <Grid RowDefinitions="48,*">
         <!-- Toolbar -->
         <Border Grid.Row="0"
-                BorderBrush="{DynamicResource BorderColor}"
+                BorderBrush="{DynamicResource ShadowBorderBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="12,0"
-                Background="{DynamicResource CardBackgroundColor}">
+                Background="{DynamicResource ShadowCardBrush}">
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Button Command="{Binding GoBackCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Back"
+                <Button Command="{Binding GoBackCommand}" Classes="ghost icon" ToolTip.Tip="Back"
                         IsVisible="{Binding ShowBackButton}">
                     <LucideIcon Kind="ArrowLeft" Size="18"/>
                 </Button>
 
                 <TextBlock Grid.Column="1" Text="{Binding BreadcrumbText}" FontSize="16" FontWeight="Regular"
-                           VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}" Margin="8,0,0,0"
+                           VerticalAlignment="Center" Foreground="{DynamicResource ShadowForegroundBrush}" Margin="8,0,0,0"
                            TextTrimming="CharacterEllipsis"
                            IsVisible="{Binding !IsFileOpen}"/>
 
                 <TextBlock Grid.Column="1" Text="{Binding FileTitle}" FontSize="16" FontWeight="Regular"
-                           VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}" Margin="8,0,0,0"
+                           VerticalAlignment="Center" Foreground="{DynamicResource ShadowForegroundBrush}" Margin="8,0,0,0"
                            TextTrimming="CharacterEllipsis"
                            IsVisible="{Binding IsFileOpen}"/>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
                     <!-- File/Folder creation group -->
                     <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
-                        <Button x:Name="NewFolderBtn" ToolTip.Tip="New Folder" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="NewFolderBtn" ToolTip.Tip="New Folder" Classes="ghost icon">
                             <LucideIcon Kind="FolderPlus" Size="18"/>
                         </Button>
-                        <Button x:Name="NewFileBtn" ToolTip.Tip="New File" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="NewFileBtn" ToolTip.Tip="New File" Classes="ghost icon">
                             <LucideIcon Kind="FilePlus" Size="18"/>
                         </Button>
                     </StackPanel>
 
                     <!-- Divider -->
-                    <Border Width="1" Background="{DynamicResource BorderColor}" Margin="4,8"
+                    <Border Width="1" Background="{DynamicResource ShadowBorderBrush}" Margin="4,8"
                             IsVisible="{Binding !IsFileOpen}"/>
 
                     <!-- Import/Export group -->
                     <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
-                        <Button x:Name="ImportFolderBtn" ToolTip.Tip="Import" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="ImportFolderBtn" ToolTip.Tip="Import" Classes="ghost icon">
                             <LucideIcon Kind="FolderInput" Size="18"/>
                         </Button>
-                        <Button x:Name="ExportBtn" ToolTip.Tip="Export  (Ctrl+E)" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="ExportBtn" ToolTip.Tip="Export  (Ctrl+E)" Classes="ghost icon">
                             <LucideIcon Kind="FolderOutput" Size="18"/>
                         </Button>
                     </StackPanel>
 
                     <!-- Divider -->
-                    <Border Width="1" Background="{DynamicResource BorderColor}" Margin="4,8"
+                    <Border Width="1" Background="{DynamicResource ShadowBorderBrush}" Margin="4,8"
                             IsVisible="{Binding !IsFileOpen}"/>
 
                     <!-- View/Theme group -->
                     <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding !IsFileOpen}">
-                        <Button x:Name="ToggleViewBtn" Command="{Binding ToggleViewCommand}" ToolTip.Tip="Toggle View" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="ToggleViewBtn" Command="{Binding ToggleViewCommand}" ToolTip.Tip="Toggle View" Classes="ghost icon">
                             <LucideIcon x:Name="ToggleViewIcon" Kind="LayoutGrid" Size="18"/>
                         </Button>
-                        <Button x:Name="ThemeToggleBtn" ToolTip.Tip="Toggle Theme" Classes="Ghost" Padding="6,4">
+                        <Button x:Name="ThemeToggleBtn" ToolTip.Tip="Toggle Theme" Classes="ghost icon">
                             <LucideIcon x:Name="ThemeToggleIcon" Kind="Sun" Size="18"/>
                         </Button>
-                        <Button Command="{Binding OpenSettingsCommand}" ToolTip.Tip="Settings" Classes="Ghost" Padding="6,4">
+                        <Button Command="{Binding OpenSettingsCommand}" ToolTip.Tip="Settings" Classes="ghost icon">
                             <LucideIcon Kind="Settings" Size="18"/>
                         </Button>
                     </StackPanel>
 
                     <!-- File open group -->
                     <StackPanel Orientation="Horizontal" Spacing="2" IsVisible="{Binding IsFileOpen}">
-                        <Button Command="{Binding PreviewFileCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Open externally">
+                        <Button Command="{Binding PreviewFileCommand}" Classes="ghost icon" ToolTip.Tip="Open externally">
                             <LucideIcon Kind="ExternalLink" Size="18"/>
                         </Button>
-                        <Button Command="{Binding SaveFileCommand}" Classes="Ghost" Padding="6,4" ToolTip.Tip="Save (Ctrl+S)">
+                        <Button Command="{Binding SaveFileCommand}" Classes="ghost icon" ToolTip.Tip="Save (Ctrl+S)">
                             <LucideIcon Kind="Save" Size="18"/>
                         </Button>
-                        <Button x:Name="DeleteBtn" Classes="Ghost" Padding="6,4" ToolTip.Tip="Delete">
+                        <Button x:Name="DeleteBtn" Classes="ghost icon" ToolTip.Tip="Delete">
                             <LucideIcon Kind="Trash2" Size="18"/>
                         </Button>
                     </StackPanel>
@@ -167,28 +141,42 @@
               x:Name="ExplorerArea">
             <Grid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Paste  (Ctrl+V)" Click="OnContextPasteClick" IsEnabled="{Binding CanPaste}">
-                        <MenuItem.Icon>
-                            <LucideIcon Kind="ClipboardPaste" Size="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="New Folder" Click="OnNewFolderClick">
-                        <MenuItem.Icon>
-                            <LucideIcon Kind="FolderPlus" Size="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="New File" Click="OnNewFileClick">
-                        <MenuItem.Icon>
-                            <LucideIcon Kind="FilePlus" Size="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator/>
-                    <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
-                        <MenuItem.Icon>
-                            <LucideIcon Kind="FolderOutput" Size="16"/>
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Click="OnContextPasteClick" IsEnabled="{Binding CanPaste}" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="ClipboardPaste" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Paste" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+V" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                    <MenuItem Classes="separator"/>
+                    <MenuItem Click="OnNewFolderClick" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="FolderPlus" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="New Folder" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                    <MenuItem Click="OnNewFileClick" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="FilePlus" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="New File" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                    <MenuItem Classes="separator"/>
+                    <MenuItem Click="OnContextExportClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="FolderOutput" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Export" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+E" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
+                                        </MenuItem>
                 </ContextMenu>
             </Grid.ContextMenu>
 
@@ -215,7 +203,7 @@
                             <Border Width="100" Height="100"
                                     Margin="4"
                                     Classes="explorer-item"
-                                    CornerRadius="{DynamicResource MdCornerRadius}"
+                                    CornerRadius="{DynamicResource ShadowRadiusMd}"
                                     Tapped="OnItemTapped"
                                     DoubleTapped="OnItemDoubleTapped"
                                     PointerPressed="OnItemPointerPressed"
@@ -225,50 +213,76 @@
                                     x:Name="ItemBorder">
                                 <Border.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Open" Click="OnContextOpenClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="FolderOpen" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextOpenClick" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="FolderOpen" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Open" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Open Externally" Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="ExternalLink" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="ExternalLink" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Open Externally" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Rename  (F2)" Click="OnContextRenameClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Pencil" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextRenameClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Pencil" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Rename" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="F2" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Copy  (Ctrl+C)" Click="OnContextCopyClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Copy" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextCopyClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Copy" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Copy" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+C" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Cut  (Ctrl+X)" Click="OnContextCutClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Scissors" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextCutClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Scissors" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Cut" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+X" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Delete  (Del)" Click="OnContextDeleteClick" Classes="Destructive">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Trash2" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextDeleteClick" Classes="destructive" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Trash2" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Delete" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Del" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="FolderOutput" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextExportClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="FolderOutput" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Export" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+E" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                                     <LucideIcon Kind="{Binding FileIconKind}" Size="40"
                                                 HorizontalAlignment="Center"
-                                                Foreground="{DynamicResource ForegroundColor}"
+                                                Foreground="{DynamicResource ShadowForegroundBrush}"
                                                 Opacity="0.7"/>
                                     <TextBlock Text="{Binding Name}" FontSize="12"
                                                HorizontalAlignment="Center"
@@ -308,7 +322,7 @@
                             <Border Height="40"
                                     Margin="0,1"
                                     Padding="8,0"
-                                    CornerRadius="{DynamicResource SmCornerRadius}"
+                                    CornerRadius="{DynamicResource ShadowRadiusSm}"
                                     Classes="explorer-item"
                                     Tapped="OnItemTapped"
                                     DoubleTapped="OnItemDoubleTapped"
@@ -319,50 +333,76 @@
                                     x:Name="ItemBorder">
                                 <Border.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Open" Click="OnContextOpenClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="FolderOpen" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextOpenClick" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="FolderOpen" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Open" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Open Externally" Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="ExternalLink" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextOpenExternallyClick" IsVisible="{Binding !IsFolder}" >
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <LucideIcon Kind="ExternalLink" Size="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Open Externally" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Rename  (F2)" Click="OnContextRenameClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Pencil" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextRenameClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Pencil" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Rename" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="F2" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Copy  (Ctrl+C)" Click="OnContextCopyClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Copy" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextCopyClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Copy" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Copy" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+C" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <MenuItem Header="Cut  (Ctrl+X)" Click="OnContextCutClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Scissors" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Click="OnContextCutClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Scissors" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Cut" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+X" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Delete  (Del)" Click="OnContextDeleteClick" Classes="Destructive">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="Trash2" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextDeleteClick" Classes="destructive" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="Trash2" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Delete" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Del" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
-                                        <Separator/>
-                                        <MenuItem Header="Export  (Ctrl+E)" Click="OnContextExportClick">
-                                            <MenuItem.Icon>
-                                                <LucideIcon Kind="FolderOutput" Size="16"/>
-                                            </MenuItem.Icon>
+                                        <MenuItem Classes="separator"/>
+                                        <MenuItem Click="OnContextExportClick" >
+                                            <MenuItem.Header>
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <LucideIcon Kind="FolderOutput" Size="16" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="Export" Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                                <shadui:Kbd Grid.Column="2" Content="Ctrl+E" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            </MenuItem.Header>
                                         </MenuItem>
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                                     <LucideIcon Kind="{Binding FileIconKind}" Size="24"
                                                 VerticalAlignment="Center"
-                                                Foreground="{DynamicResource ForegroundColor}"
+                                                Foreground="{DynamicResource ShadowForegroundBrush}"
                                                 Opacity="0.7"/>
                                     <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="13"
                                                VerticalAlignment="Center"
@@ -370,7 +410,7 @@
                                                Margin="8,0,8,0"/>
                                     <TextBlock Grid.Column="2" Text="{Binding InfoText}" FontSize="12"
                                                VerticalAlignment="Center"
-                                               Foreground="{DynamicResource MutedColor}"/>
+                                               Foreground="{DynamicResource ShadowMutedForegroundBrush}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -388,14 +428,86 @@
                  Text="{Binding FileContent, Mode=TwoWay}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
-                 Watermark="Start typing..."
+                 PlaceholderText="Start typing..."
                  FontFamily="Inter,Segoe UI,system-ui,sans-serif"
                  FontSize="14"
                  Padding="16,12"
                  Cursor="IBeam"
-                 shad:ControlAssist.MinHeight="200"
+                 MinHeight="200"
                  VerticalContentAlignment="Top"
                  AcceptsTab="True"/>
     </Grid>
+    </DockPanel>
 
-</shad:Window>
+    <!-- Dialog overlays (ShadowUI) -->
+    <shadui:Dialog x:Name="CreateDialog"
+                   x:DataType="dlg:CreateItemViewModel"
+                   Title="{Binding DialogTitle}">
+        <StackPanel Spacing="12" MinWidth="280">
+            <TextBox Text="{Binding ItemName, Mode=TwoWay}"
+                     PlaceholderText="Enter name"
+                     KeyDown="OnCreateNameKeyDown"/>
+            <TextBlock Text="Name cannot be empty"
+                       Foreground="{DynamicResource ShadowDestructiveBrush}" FontSize="12"
+                       IsVisible="{Binding IsNameErrorVisible}"/>
+            <StackPanel Spacing="8" IsVisible="{Binding IsFileMode}">
+                <Label Content="Format"/>
+                <ComboBox ItemsSource="{x:Static dlg:CreateItemViewModel.FileFormats}"
+                          SelectedIndex="{Binding SelectedFormatIndex, Mode=TwoWay}"
+                          HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </StackPanel>
+        <shadui:Dialog.Footer>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="outline" Content="Cancel" Command="{Binding CancelCommand}"/>
+                <Button Content="Create" Command="{Binding CreateCommand}"/>
+            </StackPanel>
+        </shadui:Dialog.Footer>
+    </shadui:Dialog>
+
+    <shadui:Dialog x:Name="RenameDialog"
+                   x:DataType="dlg:RenameViewModel"
+                   Title="Rename">
+        <StackPanel Spacing="12" MinWidth="280">
+            <TextBox Text="{Binding NewName, Mode=TwoWay}"
+                     PlaceholderText="Enter new name"
+                     KeyDown="OnRenameNameKeyDown"/>
+            <TextBlock Text="Name cannot be empty"
+                       Foreground="{DynamicResource ShadowDestructiveBrush}" FontSize="12"
+                       IsVisible="{Binding IsNameErrorVisible}"/>
+        </StackPanel>
+        <shadui:Dialog.Footer>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="outline" Content="Cancel" Command="{Binding CancelCommand}"/>
+                <Button Content="Rename" Command="{Binding ConfirmCommand}"/>
+            </StackPanel>
+        </shadui:Dialog.Footer>
+    </shadui:Dialog>
+
+    <shadui:AlertDialog x:Name="DeleteDialog"
+                        x:DataType="dlg:DeleteConfirmViewModel"
+                        Title="Delete"
+                        Description="{Binding Message}">
+        <shadui:AlertDialog.Footer>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="outline" Content="Cancel" Command="{Binding CancelCommand}"/>
+                <Button Classes="destructive" Content="Delete" Command="{Binding DeleteCommand}"/>
+            </StackPanel>
+        </shadui:AlertDialog.Footer>
+    </shadui:AlertDialog>
+
+    <shadui:AlertDialog x:Name="UnsavedDialog"
+                        x:DataType="dlg:UnsavedChangesViewModel"
+                        Title="Unsaved Changes"
+                        Description="{Binding Message}">
+        <shadui:AlertDialog.Footer>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Classes="outline" Content="Cancel" Command="{Binding CancelCommand}"/>
+                <Button Classes="outline" Content="Discard" Command="{Binding DiscardCommand}"/>
+                <Button Content="Save" Command="{Binding SaveCommand}"/>
+            </StackPanel>
+        </shadui:AlertDialog.Footer>
+    </shadui:AlertDialog>
+    </Grid>
+
+</Window>

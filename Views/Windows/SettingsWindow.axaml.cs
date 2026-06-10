@@ -1,8 +1,9 @@
-using ShadWindow = ShadUI.Window;
+
+using Avalonia.Controls;
 
 namespace Encryptum.Views.Windows;
 
-public partial class SettingsWindow : ShadWindow
+public partial class SettingsWindow : Window
 {
     public SettingsWindow()
     {

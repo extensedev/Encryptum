@@ -78,9 +78,9 @@ When you use **Open Externally**, the app must write the decrypted file to a tem
 ## Tech Stack
 
 - .NET 10.0
-- Avalonia 11 (MVVM)
+- Avalonia 12 (MVVM)
 - CommunityToolkit.Mvvm
-- ShadUI (local project reference)
+- [ShadowUI](https://github.com/extensedev/ShadowUI) (NuGet)
 - Lucide.Avalonia
 - Target runtime: `win-x64`
 

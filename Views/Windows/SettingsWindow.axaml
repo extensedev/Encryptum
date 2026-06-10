@@ -1,30 +1,37 @@
-<shad:Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Encryptum.ViewModels.Windows"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+        xmlns:shadui="using:ShadowUI"
         mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
         x:Class="Encryptum.Views.Windows.SettingsWindow"
         x:DataType="vm:SettingsViewModel"
         Title="Encryptum — Settings"
         Width="350" SizeToContent="Height"
         CanResize="false"
-        TitleBarAnimationEnabled="False"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/icon.ico">
-    
+
+    <DockPanel>
+    <shadui:TitleBar DockPanel.Dock="Top" Title="Settings" ShowMaximize="False" ShowMinimize="False" IconSize="20">
+        <shadui:TitleBar.Icon>
+            <Image Source="/Assets/icon.png"/>
+        </shadui:TitleBar.Icon>
+    </shadui:TitleBar>
+
     <Border Padding="24" VerticalAlignment="Top">
         <StackPanel Spacing="20">
             <TextBlock Text="Settings" FontSize="22" FontWeight="Bold"/>
 
             <CheckBox IsChecked="{Binding RunAtStartup, Mode=TwoWay}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <LucideIcon Kind="Rocket" Size="18" VerticalAlignment="Center" Foreground="{DynamicResource ForegroundColor}"/>
+                    <LucideIcon Kind="Rocket" Size="18" VerticalAlignment="Center" Foreground="{DynamicResource ShadowForegroundBrush}"/>
                     <TextBlock Text="Run at Windows startup" VerticalAlignment="Center"/>
                 </StackPanel>
             </CheckBox>
         </StackPanel>
     </Border>
+    </DockPanel>
 
-</shad:Window>
+</Window>

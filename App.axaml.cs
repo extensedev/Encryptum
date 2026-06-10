@@ -1,11 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using System;
 using System.IO;
-using System.Linq;
 using Encryptum.Services;
 using Encryptum.ViewModels.Windows;
 using Encryptum.Views.Windows;
@@ -32,7 +30,6 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             _desktop = desktop;
-            DisableAvaloniaDataAnnotationValidation();
 
             var crypto = new CryptoService();
             var vault = new VaultRepository(crypto);
@@ -70,11 +67,10 @@ public partial class App : Application
             ApplyTheme();
     }
 
-    private void ApplyTheme()
-    {
-        var watcher = new ShadUI.ThemeWatcher(this);
-        watcher.SwitchTheme(_settings.IsLightTheme ? ShadUI.ThemeMode.Light : ShadUI.ThemeMode.Dark);
-    }
+    private void ApplyTheme() =>
+        RequestedThemeVariant = _settings.IsLightTheme
+            ? Avalonia.Styling.ThemeVariant.Light
+            : Avalonia.Styling.ThemeVariant.Dark;
 
     // Tray is always on: minimizing hides the window to the tray, closing (✕) exits.
     private void SetupTray()
@@ -139,14 +135,4 @@ public partial class App : Application
         };
     }
 
-    private void DisableAvaloniaDataAnnotationValidation()
-    {
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
-    }
 }

@@ -1,11 +1,11 @@
-using System;
-using ShadUI;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using ShadowUI;
 
 namespace Encryptum.Services;
 
 public interface IMessageService
 {
-    ToastManager ToastManager { get; }
     void Success(string title, string? content = null);
     void Error(string title, string? content = null);
     void Warning(string title, string? content = null);
@@ -14,33 +14,17 @@ public interface IMessageService
 
 public class MessageService : IMessageService
 {
-    public ToastManager ToastManager { get; } = new();
+    private static Avalonia.Visual? Anchor =>
+        (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-    public void Success(string title, string? content = null)
+    private static void Show(string title, string? content, ToastType type)
     {
-        var builder = ToastManager.CreateToast(title);
-        if (content != null) builder = builder.WithContent(content);
-        builder.ShowSuccess();
+        if (Anchor is { } anchor)
+            Toast.Show(anchor, title, content, type);
     }
 
-    public void Error(string title, string? content = null)
-    {
-        var builder = ToastManager.CreateToast(title);
-        if (content != null) builder = builder.WithContent(content);
-        builder.ShowError();
-    }
-
-    public void Warning(string title, string? content = null)
-    {
-        var builder = ToastManager.CreateToast(title);
-        if (content != null) builder = builder.WithContent(content);
-        builder.ShowWarning();
-    }
-
-    public void Info(string title, string? content = null)
-    {
-        var builder = ToastManager.CreateToast(title);
-        if (content != null) builder = builder.WithContent(content);
-        builder.ShowInfo();
-    }
+    public void Success(string title, string? content = null) => Show(title, content, ToastType.Success);
+    public void Error(string title, string? content = null) => Show(title, content, ToastType.Error);
+    public void Warning(string title, string? content = null) => Show(title, content, ToastType.Warning);
+    public void Info(string title, string? content = null) => Show(title, content, ToastType.Info);
 }

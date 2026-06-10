@@ -2,11 +2,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Encryptum.ViewModels.Windows;
-using ShadWindow = ShadUI.Window;
 
 namespace Encryptum.Views.Windows;
 
-public partial class LoginWindow : ShadWindow
+public partial class LoginWindow : Window
 {
     public LoginWindow()
     {
@@ -22,10 +21,17 @@ public partial class LoginWindow : ShadWindow
         }
     }
 
+    // Keyboard panel (272) + StackPanel spacing (12).
+    private const double KeyboardBlockHeight = 284;
+
     private void OnKeyboardToggle(object? sender, RoutedEventArgs e)
     {
         var panel = this.FindControl<Panel>("KeyboardPanel");
-        if (panel is not null)
-            panel.IsVisible = !panel.IsVisible;
+        if (panel is null) return;
+
+        panel.IsVisible = !panel.IsVisible;
+
+        SizeToContent = SizeToContent.Manual;
+        Height += panel.IsVisible ? KeyboardBlockHeight : -KeyboardBlockHeight;
     }
 }

@@ -10,7 +10,6 @@
         <IlcStackReserveSize>8388608</IlcStackReserveSize>
         <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
         <NoWarn>CA1416;IL2026</NoWarn>
-        <DefaultItemExcludes>$(DefaultItemExcludes);ShadUI\**</DefaultItemExcludes>
         <RootNamespace>Encryptum</RootNamespace>
         <AssemblyName>Encryptum</AssemblyName>
     </PropertyGroup>
@@ -26,28 +25,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.12" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
-
-
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12">
-            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="Avalonia" Version="12.0.4" />
+        <PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="HotAvalonia" Version="3.1.0" />
-        <PackageReference Include="Lucide.Avalonia" Version="0.2.3" />
-        <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
-        <ProjectReference Include="ShadUI\ShadUI.csproj" />
+        <PackageReference Include="HotAvalonia" Version="3.1.1" />
+        <PackageReference Include="Lucide.Avalonia" Version="0.2.9" />
+        <PackageReference Include="ShadowUI" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Update="Views\Windows\SettingsWindow.axaml.cs">
         <DependentUpon>SettingsWindow.axaml</DependentUpon>
-      </Compile>
-      <Compile Update="Views\Dialogs\DeleteConfirmDialog.axaml.cs">
-        <DependentUpon>DeleteConfirmDialog.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

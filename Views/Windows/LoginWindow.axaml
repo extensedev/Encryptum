@@ -1,9 +1,9 @@
-<shad:Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Encryptum.ViewModels.Windows"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:shad="clr-namespace:ShadUI;assembly=ShadUI"
+        xmlns:shadui="using:ShadowUI"
         mc:Ignorable="d" d:DesignWidth="520"
         x:Class="Encryptum.Views.Windows.LoginWindow"
         x:DataType="vm:LoginViewModel"
@@ -11,26 +11,28 @@
         Width="520"
         SizeToContent="Height"
         CanResize="false"
-        TitleBarAnimationEnabled="False"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/icon.ico">
 
-    <shad:Window.LogoContent>
-        <Image Source="/Assets/icon.png" Width="20" Height="20"/>
-    </shad:Window.LogoContent>
+    <DockPanel>
+    <shadui:TitleBar DockPanel.Dock="Top" Title="Encryptum" ShowMaximize="False" IconSize="20">
+        <shadui:TitleBar.Icon>
+            <Image Source="/Assets/icon.png"/>
+        </shadui:TitleBar.Icon>
+    </shadui:TitleBar>
 
     <Border Padding="24,20" HorizontalAlignment="Center">
         <StackPanel Width="480" Spacing="12">
 
             <Border IsVisible="{Binding IsNewVault}"
-                    Background="{DynamicResource CardBackgroundColor}"
-                    BorderBrush="{DynamicResource MutedColor}"
+                    Background="{DynamicResource ShadowCardBrush}"
+                    BorderBrush="{DynamicResource ShadowMutedForegroundBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="12,8">
                 <StackPanel Spacing="4">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <LucideIcon Kind="Info" Size="16" Foreground="{DynamicResource MutedColor}" VerticalAlignment="Center"/>
+                        <LucideIcon Kind="Info" Size="16" Foreground="{DynamicResource ShadowMutedForegroundBrush}" VerticalAlignment="Center"/>
                         <TextBlock Text="Creating a new vault" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="The password you enter will be used to encrypt your vault. Please choose a strong password that you won't forget — it cannot be recovered."
@@ -39,7 +41,7 @@
             </Border>
 
             <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                    Classes="Outline" Height="36" FontSize="13"
+                    Classes="outline" Height="36" FontSize="13"
                     Click="OnKeyboardToggle">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <LucideIcon Kind="Keyboard" Size="16" VerticalAlignment="Center"/>
@@ -48,8 +50,8 @@
             </Button>
 
             <Panel x:Name="KeyboardPanel" IsVisible="False">
-                <Border Background="{DynamicResource CardBackgroundColor}"
-                        BorderBrush="{DynamicResource BorderColor}"
+                <Border Background="{DynamicResource ShadowCardBrush}"
+                        BorderBrush="{DynamicResource ShadowBorderBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="12,8">
@@ -63,7 +65,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:KeyButtonViewModel">
-                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="30" Height="38" Padding="0" FontSize="12" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="Outline"/>
+                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="30" Height="38" Padding="0" FontSize="12" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="outline"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -76,7 +78,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:KeyButtonViewModel">
-                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="Outline"/>
+                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="outline"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -89,7 +91,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:KeyButtonViewModel">
-                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="Outline"/>
+                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="outline"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -102,7 +104,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:KeyButtonViewModel">
-                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="Outline"/>
+                                    <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="38" Height="40" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="outline"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -116,7 +118,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:KeyButtonViewModel">
-                                        <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="36" Height="38" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="Outline"/>
+                                        <Button Content="{Binding Key}" Command="{Binding PressCommand}" Width="36" Height="38" Padding="0" FontSize="14" FontFamily="Consolas,monospace" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Classes="outline"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -135,16 +137,16 @@
                 <TextBox Grid.Column="0"
                          x:Name="PasswordBox"
                          Text="{Binding Password, Mode=TwoWay}"
-                         Watermark="Password"
+                         PlaceholderText="Password"
                          PasswordChar="•"
                          IsVisible="{Binding !IsPasswordVisible}"
                          KeyDown="OnPasswordKeyDown"/>
                 <TextBox Grid.Column="0"
                          Text="{Binding Password, Mode=TwoWay}"
-                         Watermark="Password"
+                         PlaceholderText="Password"
                          IsVisible="{Binding IsPasswordVisible}"
                          KeyDown="OnPasswordKeyDown"/>
-                <Button Grid.Column="1" Command="{Binding TogglePasswordCommand}" Classes="Ghost" Width="36" Height="36" Padding="0" VerticalAlignment="Center" Margin="4,0,0,0">
+                <Button Grid.Column="1" Command="{Binding TogglePasswordCommand}" Classes="ghost icon" VerticalAlignment="Center" Margin="4,0,0,0">
                     <Panel>
                         <LucideIcon Kind="Eye" Size="16" IsVisible="{Binding !IsPasswordVisible}"/>
                         <LucideIcon Kind="EyeOff" Size="16" IsVisible="{Binding IsPasswordVisible}"/>
@@ -154,12 +156,13 @@
             <Button Content="{Binding UnlockButtonText}"
                     Command="{Binding LoginCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                    Classes="Primary" Height="40" FontSize="14"/>
+                    Height="40" FontSize="14"/>
 
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DestructiveColor}"
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ShadowDestructiveBrush}"
                        HorizontalAlignment="Center"
                        IsVisible="{Binding IsErrorVisible}"/>
         </StackPanel>
     </Border>
+    </DockPanel>
 
-</shad:Window>
+</Window>

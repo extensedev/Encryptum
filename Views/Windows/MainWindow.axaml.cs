@@ -16,13 +16,11 @@ using Encryptum.Models;
 using Encryptum.Services;
 using Encryptum.ViewModels.Windows;
 using Encryptum.ViewModels.Dialogs;
-using Encryptum.Views.Dialogs;
-using ShadUI;
-using ShadWindow = ShadUI.Window;
+using ShadowUI;
 
 namespace Encryptum.Views.Windows;
 
-public partial class MainWindow : ShadWindow
+public partial class MainWindow : Window
 {
     private ISettingsService _settings = null!;
     private string? _pendingName;
@@ -127,11 +125,10 @@ public partial class MainWindow : ShadWindow
         UpdateThemeIcon();
     }
 
-    private void ApplyTheme()
-    {
-        var watcher = new ShadUI.ThemeWatcher(Application.Current!);
-        watcher.SwitchTheme(_settings.IsLightTheme ? ShadUI.ThemeMode.Light : ShadUI.ThemeMode.Dark);
-    }
+    private void ApplyTheme() =>
+        Application.Current!.RequestedThemeVariant = _settings.IsLightTheme
+            ? Avalonia.Styling.ThemeVariant.Light
+            : Avalonia.Styling.ThemeVariant.Dark;
 
     private void UpdateThemeIcon()
     {
@@ -196,18 +193,58 @@ public partial class MainWindow : ShadWindow
         await settingsWindow.ShowDialog(this);
     }
 
+    // Opens a ShadowUI overlay dialog and completes when it closes
+    // (footer buttons, X button, click outside, or Esc).
+    private static Task ShowOverlayDialogAsync(Dialog dialog, object dialogVm)
+    {
+        var tcs = new TaskCompletionSource();
+        dialog.DataContext = dialogVm;
+
+        void OnDialogPropertyChanged(object? s, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property == Dialog.IsOpenProperty && e.NewValue is false)
+            {
+                dialog.PropertyChanged -= OnDialogPropertyChanged;
+                dialog.DataContext = null;
+                tcs.TrySetResult();
+            }
+        }
+
+        dialog.PropertyChanged += OnDialogPropertyChanged;
+        dialog.Open();
+        return tcs.Task;
+    }
+
     private async void OnRenameRequested(ExplorerItemViewModel item)
     {
         var dialogVm = new RenameViewModel(item.Name);
-        var dialog = new RenameDialog { DataContext = dialogVm };
 
         dialogVm.RenameConfirmed += newName =>
         {
             if (DataContext is VaultViewModel vm)
                 vm.ApplyRename(item, newName);
         };
+        dialogVm.RequestClose += () => RenameDialog.Close();
 
-        await dialog.ShowDialog(this);
+        await ShowOverlayDialogAsync(RenameDialog, dialogVm);
+    }
+
+    private void OnCreateNameKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && CreateDialog.DataContext is CreateItemViewModel vm)
+        {
+            vm.CreateCommand.Execute(null);
+            e.Handled = true;
+        }
+    }
+
+    private void OnRenameNameKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && RenameDialog.DataContext is RenameViewModel vm)
+        {
+            vm.ConfirmCommand.Execute(null);
+            e.Handled = true;
+        }
     }
 
     private async Task<bool> OnConfirmUnsavedChanges(string fileName)
@@ -215,12 +252,12 @@ public partial class MainWindow : ShadWindow
         if (DataContext is not VaultViewModel vm) return true;
 
         var dialogVm = new UnsavedChangesViewModel(fileName);
-        var dialog = new UnsavedChangesDialog { DataContext = dialogVm };
 
         bool? result = null;
         dialogVm.Result += r => result = r;
+        dialogVm.RequestClose += () => UnsavedDialog.Close();
 
-        await dialog.ShowDialog(this);
+        await ShowOverlayDialogAsync(UnsavedDialog, dialogVm);
 
         if (result == true)
         {
@@ -484,9 +521,8 @@ public partial class MainWindow : ShadWindow
         if (count == 0) return;
 
         var dialogVm = new DeleteConfirmViewModel(count);
-        var dialog = new DeleteConfirmDialog { DataContext = dialogVm };
-        dialogVm.RequestClose += () => dialog.Close();
-        await dialog.ShowDialog(this);
+        dialogVm.RequestClose += () => DeleteDialog.Close();
+        await ShowOverlayDialogAsync(DeleteDialog, dialogVm);
 
         if (dialogVm.Confirmed)
         {
@@ -503,8 +539,8 @@ public partial class MainWindow : ShadWindow
         _pendingName = null;
         var dialogVm = new CreateItemViewModel(CreateItemType.Folder);
         dialogVm.ItemCreated += name => { _pendingName = name; };
-        var dialog = new CreateItemDialog { DataContext = dialogVm };
-        await dialog.ShowDialog(this);
+        dialogVm.RequestClose += () => CreateDialog.Close();
+        await ShowOverlayDialogAsync(CreateDialog, dialogVm);
         if (!string.IsNullOrWhiteSpace(_pendingName))
             await vm.AddFolderAsync(_pendingName);
     }
@@ -515,8 +551,8 @@ public partial class MainWindow : ShadWindow
         _pendingName = null;
         var dialogVm = new CreateItemViewModel(CreateItemType.File);
         dialogVm.ItemCreated += name => { _pendingName = name; };
-        var dialog = new CreateItemDialog { DataContext = dialogVm };
-        await dialog.ShowDialog(this);
+        dialogVm.RequestClose += () => CreateDialog.Close();
+        await ShowOverlayDialogAsync(CreateDialog, dialogVm);
         if (!string.IsNullOrWhiteSpace(_pendingName))
             await vm.AddFileAsync(_pendingName);
     }
@@ -706,7 +742,7 @@ public partial class MainWindow : ShadWindow
     {
         try
         {
-            if (e.Data.Contains(DataFormats.Files))
+            if (e.DataTransfer.Contains(DataFormat.File))
             {
                 e.DragEffects = DragDropEffects.Copy;
                 e.Handled = true;
@@ -727,9 +763,9 @@ public partial class MainWindow : ShadWindow
         try
         {
             if (DataContext is not VaultViewModel vm) return;
-            if (!e.Data.Contains(DataFormats.Files)) return;
+            if (!e.DataTransfer.Contains(DataFormat.File)) return;
 
-            var files = e.Data.GetFiles();
+            var files = e.DataTransfer.TryGetFiles();
             if (files == null) return;
 
             var imported = 0;
