@@ -39,6 +39,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (!OperatingSystem.IsWindows())
+            (Chrome.Parent as Panel)?.Children.Remove(Chrome);
     }
 
     public void InitializeSettings(ISettingsService settings)

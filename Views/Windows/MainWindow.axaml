@@ -49,7 +49,7 @@
 
     <Grid>
     <DockPanel>
-    <shadui:TitleBar DockPanel.Dock="Top" Title="Encryptum" IconSize="20">
+    <shadui:TitleBar x:Name="Chrome" DockPanel.Dock="Top" Title="Encryptum" IconSize="20">
         <shadui:TitleBar.Icon>
             <Image Source="/Assets/icon.png"/>
         </shadui:TitleBar.Icon>

@@ -1,0 +1,3 @@
+# Changelog
+
+- 2026-07-02 — Linux support: settings moved from the registry to a settings.cfg file next to the app, native titlebar on Linux (no more double titlebar), unexpected login errors now shown in a dialog, ShadowUI updated to 1.1.4.

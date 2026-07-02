@@ -25,6 +25,12 @@ public partial class LoginViewModel : ViewModelBase
     private bool _isErrorVisible;
 
     [ObservableProperty]
+    private string _errorDetails = string.Empty;
+
+    [ObservableProperty]
+    private bool _isErrorDialogOpen;
+
+    [ObservableProperty]
     private bool _isNewVault;
 
     public string UnlockButtonText => IsNewVault ? "Create" : "Unlock";
@@ -54,6 +60,9 @@ public partial class LoginViewModel : ViewModelBase
 
     [RelayCommand]
     private void TogglePassword() => IsPasswordVisible = !IsPasswordVisible;
+
+    [RelayCommand]
+    private void CloseErrorDialog() => IsErrorDialogOpen = false;
 
     [RelayCommand]
     private void OpenSettings() => SettingsRequested?.Invoke();
@@ -95,9 +104,14 @@ public partial class LoginViewModel : ViewModelBase
             await Task.Run(() => _vault.TryLoad(pw));
             LoginSucceeded?.Invoke();
         }
-        catch (Exception)
+        catch (System.Security.Cryptography.CryptographicException)
         {
             ShowError("Wrong password");
+        }
+        catch (Exception ex)
+        {
+            ErrorDetails = $"{ex.GetType().Name}: {ex.Message}";
+            IsErrorDialogOpen = true;
         }
         finally
         {

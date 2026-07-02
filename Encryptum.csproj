@@ -30,7 +30,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="HotAvalonia" Version="3.1.1" />
         <PackageReference Include="Lucide.Avalonia" Version="0.2.9" />
-        <PackageReference Include="ShadowUI" Version="1.0.0" />
+        <PackageReference Include="ShadowUI" Version="1.1.4" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -10,6 +11,8 @@ public partial class LoginWindow : Window
     public LoginWindow()
     {
         InitializeComponent();
+        if (!OperatingSystem.IsWindows())
+            (Chrome.Parent as Panel)?.Children.Remove(Chrome);
     }
 
     private void OnPasswordKeyDown(object? sender, KeyEventArgs e)
