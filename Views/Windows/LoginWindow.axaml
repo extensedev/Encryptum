@@ -8,13 +8,12 @@
         x:Class="Encryptum.Views.Windows.LoginWindow"
         x:DataType="vm:LoginViewModel"
         Title="Encryptum"
-        Width="520"
+        Width="560"
         SizeToContent="Height"
         CanResize="false"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/icon.ico">
 
-    <Grid>
     <DockPanel>
     <shadui:TitleBar x:Name="Chrome" DockPanel.Dock="Top" Title="Encryptum" ShowMaximize="False" IconSize="20">
         <shadui:TitleBar.Icon>
@@ -22,24 +21,48 @@
         </shadui:TitleBar.Icon>
     </shadui:TitleBar>
 
-    <Border Padding="24,20" HorizontalAlignment="Center">
+    <shadui:Card HorizontalAlignment="Center" Margin="24,20">
         <StackPanel Width="480" Spacing="12">
 
-            <Border IsVisible="{Binding IsNewVault}"
-                    Background="{DynamicResource ShadowCardBrush}"
-                    BorderBrush="{DynamicResource ShadowMutedForegroundBrush}"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="12,8">
-                <StackPanel Spacing="4">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <LucideIcon Kind="Info" Size="16" Foreground="{DynamicResource ShadowMutedForegroundBrush}" VerticalAlignment="Center"/>
-                        <TextBlock Text="Creating a new vault" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+            <StackPanel Spacing="4" Margin="0,0,0,8">
+                <shadui:CardTitle Content="Unlock vault"/>
+                <shadui:CardDescription Content="Enter your password to access encrypted files."/>
+            </StackPanel>
+
+            <Panel Height="88">
+                <Border IsVisible="{Binding ShowInfoBanner}"
+                        Background="{DynamicResource ShadowCardBrush}"
+                        BorderBrush="{DynamicResource ShadowMutedForegroundBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12,8">
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <LucideIcon Kind="Info" Size="16" Foreground="{DynamicResource ShadowMutedForegroundBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="Creating a new vault" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="The password you enter will be used to encrypt your vault. Please choose a strong password that you won't forget — it cannot be recovered."
+                                   FontSize="13" TextWrapping="Wrap" Opacity="0.8"/>
                     </StackPanel>
-                    <TextBlock Text="The password you enter will be used to encrypt your vault. Please choose a strong password that you won't forget — it cannot be recovered."
-                               FontSize="13" TextWrapping="Wrap" Opacity="0.8"/>
-                </StackPanel>
-            </Border>
+                </Border>
+
+                <Border IsVisible="{Binding IsErrorVisible}"
+                        Background="{DynamicResource ShadowCardBrush}"
+                        BorderBrush="{DynamicResource ShadowDestructiveBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12,8">
+                    <StackPanel Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <LucideIcon Kind="CircleAlert" Size="16" Foreground="{DynamicResource ShadowDestructiveBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="Unlock failed" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource ShadowDestructiveBrush}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   FontSize="13" TextWrapping="Wrap" Opacity="0.9"/>
+                    </StackPanel>
+                </Border>
+            </Panel>
 
             <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Classes="outline" Height="36" FontSize="13"
@@ -158,24 +181,8 @@
                     Command="{Binding LoginCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Height="40" FontSize="14"/>
-
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ShadowDestructiveBrush}"
-                       HorizontalAlignment="Center"
-                       IsVisible="{Binding IsErrorVisible}"/>
         </StackPanel>
-    </Border>
+    </shadui:Card>
     </DockPanel>
-
-    <shadui:Dialog Title="Login error"
-                   Description="An unexpected error occurred while unlocking the vault."
-                   IsOpen="{Binding IsErrorDialogOpen, Mode=TwoWay}">
-        <SelectableTextBlock Text="{Binding ErrorDetails}"
-                             TextWrapping="Wrap"
-                             MaxWidth="360"/>
-        <shadui:Dialog.Footer>
-            <Button Content="Close" Command="{Binding CloseErrorDialogCommand}" HorizontalAlignment="Right"/>
-        </shadui:Dialog.Footer>
-    </shadui:Dialog>
-    </Grid>
 
 </Window>

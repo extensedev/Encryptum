@@ -24,18 +24,20 @@ public partial class LoginViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isErrorVisible;
 
-    [ObservableProperty]
-    private string _errorDetails = string.Empty;
+    public bool ShowInfoBanner => IsNewVault && !IsErrorVisible;
 
-    [ObservableProperty]
-    private bool _isErrorDialogOpen;
+    partial void OnIsErrorVisibleChanged(bool value) => OnPropertyChanged(nameof(ShowInfoBanner));
 
     [ObservableProperty]
     private bool _isNewVault;
 
     public string UnlockButtonText => IsNewVault ? "Create" : "Unlock";
 
-    partial void OnIsNewVaultChanged(bool value) => OnPropertyChanged(nameof(UnlockButtonText));
+    partial void OnIsNewVaultChanged(bool value)
+    {
+        OnPropertyChanged(nameof(UnlockButtonText));
+        OnPropertyChanged(nameof(ShowInfoBanner));
+    }
 
     [ObservableProperty]
     private bool _isPasswordVisible;
@@ -60,9 +62,6 @@ public partial class LoginViewModel : ViewModelBase
 
     [RelayCommand]
     private void TogglePassword() => IsPasswordVisible = !IsPasswordVisible;
-
-    [RelayCommand]
-    private void CloseErrorDialog() => IsErrorDialogOpen = false;
 
     [RelayCommand]
     private void OpenSettings() => SettingsRequested?.Invoke();
@@ -110,8 +109,7 @@ public partial class LoginViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            ErrorDetails = $"{ex.GetType().Name}: {ex.Message}";
-            IsErrorDialogOpen = true;
+            ShowError($"{ex.GetType().Name}: {ex.Message}");
         }
         finally
         {

@@ -8,6 +8,7 @@ namespace Encryptum.Services;
 public interface ISettingsService
 {
     bool RunAtStartup { get; set; }
+    bool MinimizeToTray { get; set; }
     bool UseVirtualKeyboard { get; set; }
     bool IsLightTheme { get; set; }
     bool IsListView { get; set; }
@@ -33,6 +34,12 @@ public class SettingsService : ISettingsService
     {
         get => ReadBool(nameof(RunAtStartup));
         set { WriteBool(nameof(RunAtStartup), value); SetStartup(value); SettingChanged?.Invoke(nameof(RunAtStartup)); }
+    }
+
+    public bool MinimizeToTray
+    {
+        get => ReadBool(nameof(MinimizeToTray), true);
+        set { WriteBool(nameof(MinimizeToTray), value); SettingChanged?.Invoke(nameof(MinimizeToTray)); }
     }
 
     public bool UseVirtualKeyboard

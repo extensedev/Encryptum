@@ -13,6 +13,9 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private bool _runAtStartup;
 
+    [ObservableProperty]
+    private bool _minimizeToTray;
+
     public event Action? Closed;
 
     public SettingsViewModel(ISettingsService settings)
@@ -20,9 +23,12 @@ public partial class SettingsViewModel : ViewModelBase
         _settings = settings;
 
         RunAtStartup = _settings.RunAtStartup;
+        MinimizeToTray = _settings.MinimizeToTray;
     }
 
     partial void OnRunAtStartupChanged(bool value) => _settings.RunAtStartup = value;
+
+    partial void OnMinimizeToTrayChanged(bool value) => _settings.MinimizeToTray = value;
 
     [RelayCommand]
     private void Close() => Closed?.Invoke();

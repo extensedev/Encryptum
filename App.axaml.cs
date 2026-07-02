@@ -85,7 +85,7 @@ public partial class App : Application
 
     private void OnMainWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property == Window.WindowStateProperty && e.NewValue is WindowState.Minimized)
+        if (e.Property == Window.WindowStateProperty && e.NewValue is WindowState.Minimized && _settings.MinimizeToTray)
             (sender as Window)!.Hide();
     }
 
